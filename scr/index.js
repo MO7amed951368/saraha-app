@@ -1,8 +1,8 @@
 import express from "express";
 import authRouter from "./modules/Auth/auth.controller.js";
-import messageRouter from "./modules/message/message.controller.js";
+import messageRouter from "./modules/Messages/message.controller.js";
 import dbConection from "./DB/db.conecction.js";
-import userRouter from "./modules/user/user.controller.js";
+import userRouter from "./modules/Users/user.controller.js";
 const app = new express()
 const port = 5000
 
