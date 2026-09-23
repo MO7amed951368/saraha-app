@@ -1,10 +1,14 @@
+
+import "./config/env.config.js"
 import express from "express";
 import authRouter from "./modules/Auth/auth.controller.js";
 import messageRouter from "./modules/Messages/message.controller.js";
 import dbConection from "./DB/db.conecction.js";
 import userRouter from "./modules/Users/user.controller.js";
+import envConfig from "./config/env.config.js";
+import errorHandler from "./middelware/errorMiddleware.js";
 const app = new express()
-const port = 5000
+const port = envConfig.port.PORT
 
 dbConection()
 //midellware function
@@ -20,9 +24,7 @@ app.use((req, res) => {
     res.status(404).send({ message: "Endpoint no found  " })
 })
 //error handling middelware
-app.use((err, req, res, next) => {
-    res.status(500).send({ message: 'internal server error', error: 'err.message' })
-})
+app.use(errorHandler)
 app.listen(port, () => {
     console.log(`app is running on port ${port}`);
 

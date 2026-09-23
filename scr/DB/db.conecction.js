@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import envConfig from "../config/env.config.js";
 const dbConection = async () => {
     try {
-        await mongoose.connect('mongodb://localhost:27017/saraha-app')
+        await mongoose.connect(envConfig.dataBase.URI)
         console.log('database connect succses');
 
     } catch (error) {

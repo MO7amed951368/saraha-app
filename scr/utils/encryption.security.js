@@ -1,8 +1,9 @@
 
 import crypto from 'node:crypto';
+import envConfig from '../config/env.config.js';
 
-const ENCRYPTION_KEY = Buffer.from(`7f3a9c2e81d64b05f2a7e93c4d8b1a60e5f9472c3a1d8e6b9f0c5a27d4e8136b`, 'hex')
-const IV_LENGTH = 16;
+const ENCRYPTION_KEY = Buffer.from(envConfig.encryption.ENCRYPTION_KEY, 'hex')
+const IV_LENGTH = envConfig.encryption.IV;
 
 export const encrypt = (plainText) => {
 

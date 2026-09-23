@@ -6,31 +6,20 @@ const authRouter = Router()
 
 authRouter.post('/register', async (req, res) => {
 
-    try {
-        const { firstname, lastname, email, password, gender, age ,phoneNumber } = req.body
-        const result = await AuthService.signup({ firstname, lastname, email, password, gender, age, phoneNumber })
-        console.log(result);
+    const { firstname, lastname, email, password, gender, age, phoneNumber } = req.body
+    const result = await AuthService.signup({ firstname, lastname, email, password, gender, age, phoneNumber })
+    console.log(result);
 
-        res.status(201).json({ message: 'user signup succssfuly', user: result })
-
-    } catch (err) {
-        res.status(400).json({
-            message: err.message
-        });
-    }
+    res.status(201).json({ message: 'user signup succssfuly', user: result })
 })
 
 //login user
 authRouter.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body
-        const user = await AuthService.signIn({ email, password })
-        res.status(200).json({ message: 'user login successfuly ', data: user })
-    } catch (err) {
-        res.status(400).json({
-            message: err.message
-        });
-    }
+
+    const { email, password } = req.body
+    const user = await AuthService.signIn({ email, password })
+    res.status(200).json({ message: 'user login successfuly ', data: user })
+
 
 })
 export default authRouter
