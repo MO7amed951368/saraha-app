@@ -24,9 +24,11 @@ export const signup = async (body) => {
         phoneNumber: encryptedPhone || undefined
     });
 };
-
+//login user
 export const signIn = async (body) => {
     const { email, password } = body;
+
+
     const isEmailExsist = await userRepo.findOneDocument({ email });
 
     if (!isEmailExsist)

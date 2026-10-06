@@ -42,10 +42,11 @@ const userSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
-        required: true,
+        // required: true,
         max: 50,
         min: [18, 'age must be at least 18 years']
-    },  phoneNumber: {
+    }, 
+     phoneNumber: {
         type: String,
         required: true,
         unique: true
