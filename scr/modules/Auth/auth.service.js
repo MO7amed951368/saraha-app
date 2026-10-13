@@ -1,9 +1,9 @@
 import UserRepository from "../../DB/repository/user.repository.js";
-import { encrypt } from "../../utils/security/encryption.security.js";
-import { BadRReqestError, conflictError } from "../../utils/errors/exeption.error.js";
-import { compareTwoHashes, hash } from "../../utils/security/hash.security.js";
+import { encrypt } from "../../common/utils/security/encryption.security.js";
+import { BadRReqestError, conflictError } from "../../common/utils/errors/exeption.error.js";
+import { compareTwoHashes, hash } from "../../common/utils/security/hash.security.js";
 import envConfig from "../../config/env.config.js";
-import { generatToken } from "../../utils/token.utils.js";
+import { generatToken } from "../../common/utils/token.utils.js";
 
 const userRepo = new UserRepository();
 

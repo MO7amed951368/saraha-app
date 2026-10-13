@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as userService from './user.service.js'
 import { paramsSchema } from "./user.validation.js";
-import { BadRReqestError } from "../../utils/errors/exeption.error.js";
+import { BadRReqestError } from "../../common/utils/errors/exeption.error.js";
 import { authenticate } from "../../middelware/authentication.middelware.js";
 import { authorize } from "../../middelware/authorization.middelware.js";
 
@@ -30,6 +30,7 @@ userRouter.get('/', authenticate, authorize(['admin']), async (req, res) => {
 userRouter.patch('/update', authenticate, async (req, res, next) => {
     try {
         const { firstname, lastname, email, password, gender, age, phoneNumber, role } = req.body;
+        // const { userId } = req.params
         const result = await userService.updateUser({ firstname, lastname, email, password, gender, age, phoneNumber, role }, req.authUser._id)
         res.status(200).json({ message: 'user update succsesfuly ', data: result })
     } catch (err) {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as AuthService from './auth.service.js'
 import { loginSchema, registerSchema } from "./auth.valadation.js";
-import { BadRReqestError } from "../../utils/errors/exeption.error.js";
+import { BadRReqestError } from "../../common/utils/errors/exeption.error.js";
 const authRouter = Router()
 
 
