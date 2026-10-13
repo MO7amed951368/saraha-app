@@ -6,6 +6,7 @@ import envConfig from "../../config/env.config.js";
 import { generatToken } from "../../common/utils/token.utils.js";
 
 const userRepo = new UserRepository();
+const {user:userEnvConfig,admin:adminEnvConfig} = envConfig.jwt
 
 export const signup = async (body) => {
     const { firstname, lastname, email, password, gender, age, phoneNumber, role } = body;
@@ -26,25 +27,21 @@ export const signup = async (body) => {
     });
 };
 //login user
-export const signIn = async (body) => {
+export const signIn = async (body, issuer) => {
     const { email, password } = body;
 
 // Check if the email exists in the database
-    const isEmailExsist = await userRepo.findOneDocument({ email });
-    if (!isEmailExsist)
+    const user = await userRepo.findOneDocument({ email });
+    if (!user)
         throw new BadRReqestError("invalid email or password", 400, {}, "INVALID_CREDENTIALS");
 
 // Compare the provided password with the stored hashed password
-    const isPasswordMatched = await compareTwoHashes(isEmailExsist.password, password);
+    const isPasswordMatched = await compareTwoHashes(user.password, password);
     if (!isPasswordMatched)
         throw new BadRReqestError("invalid email or password", 400, {}, "INVALID_CREDENTIALS");
 
-    // Generate access token
-    const accessToken = generatToken(
-        // Payload containing user ID, email, and role
-        { _id: isEmailExsist._id, email: isEmailExsist.email, role: isEmailExsist.role },
-        envConfig.jwt.user.access_token_secret,
-        { expiresIn: '1h' }
-    );
-    return { Message: "login successfuly", accessToken };
+   // Generate JWT tokens (access and refresh) for the authenticated user
+    const tokens =await generatToken(user ,issuer)
+  
+    return tokens;
 };

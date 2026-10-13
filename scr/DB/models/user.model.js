@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { enmRole,enmGender } from "../../common/constant.js";
+import { enmRole, enmGender } from "../../common/constant.enum.js";
 const userSchema = new mongoose.Schema({
     firstname: {
         type: String,

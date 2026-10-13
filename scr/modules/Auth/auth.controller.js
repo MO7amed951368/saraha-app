@@ -25,7 +25,7 @@ authRouter.post('/login', async (req, res) => {
         throw new BadRReqestError("validation error", 400, { validationError: validateRusult.error.details }, "VALIDATION_ERROR")
     }
     // Call the signIn service to authenticate the user and generate an access token
-    const user = await AuthService.signIn(validateRusult.value)
+    const user = await AuthService.signIn(validateRusult.value,`${req.protocol}://${req.host}`)
     res.status(200).json({ message: 'user login successfuly ', data: user })
 
 

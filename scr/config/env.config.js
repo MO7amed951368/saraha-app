@@ -15,7 +15,16 @@ const envConfig = {
     },
     jwt: {
         user: {
-            access_token_secret: process.env.ACCESS_TOKEN_SECRET
+            access_token_secret: process.env.USER_ACCESS_TOKEN_SECRET,
+            refresh_token_secret: process.env.USER_REFRESH_TOKEN_SECRET,
+        },
+        admin: {
+            access_token_secret: process.env.ADMIN_ACCESS_TOKEN_SECRET,
+            refresh_token_secret: process.env.ADMIN_REFRESH_TOKEN_SECRET,
+        },
+        expiration: {
+            access_token_expiration: process.env.ACCESS_TOKEN_EXPIRATION,
+            refresh_token_expiration: process.env.REFRESH_TOKEN_EXPIRATION
         }
 
     }

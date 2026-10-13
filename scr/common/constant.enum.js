@@ -8,3 +8,11 @@ export const enmRole = {
     ADMIN: "admin",
     SUPER_ADMIN: "superAdmin"
 }   
+export const TokenTypeEnm = {
+    access: "access",
+    refresh: "refresh"
+}   
+export const AudienceEnm = {
+    user: "user",
+    admin: "admin"
+}
