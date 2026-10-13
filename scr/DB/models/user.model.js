@@ -45,11 +45,17 @@ const userSchema = new mongoose.Schema({
         // required: true,
         max: 50,
         min: [18, 'age must be at least 18 years']
-    }, 
-     phoneNumber: {
+    },
+    phoneNumber: {
         type: String,
         required: true,
         unique: true
+    },
+    role: {
+        type: String,
+        enum: ["user", "admin", "superAdmin"],
+        default: 'user',
+        required: true,
     }
 
 }, {

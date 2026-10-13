@@ -14,5 +14,6 @@ export const registerSchema = loginSchema.keys({
     confirmPassword: joi.string().valid(joi.ref('password')).required(),
     gender: joi.string().valid('male', 'female', 'other').default('other'),
     age: joi.number().integer().min(16).max(60),
+    role: joi.string().valid('user', 'admin', 'superAdmin').default('user')
 
 });

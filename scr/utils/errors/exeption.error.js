@@ -10,3 +10,13 @@ export class conflictError extends AppError {
         super(message, statusCode, data, code);
     }
 }
+export class unauthorizedError extends AppError {
+    constructor(message, statusCode = 401, data = {}, code = 'UNAUTHORIZED') {
+        super(message, statusCode, data, code);
+    }
+}
+export class notFoundError extends AppError {
+    constructor(message, statusCode = 404, data = {}, code = 'NOT_FOUND') {
+        super(message, statusCode, data, code);
+    }
+}

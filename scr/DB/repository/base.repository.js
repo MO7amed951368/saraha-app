@@ -23,5 +23,8 @@ export default class BaseRepository {
     findAndDeleteDocument(filter) {
         return this.model.findOneAndDelete(filter);
     }
+    findAllDocuments(filter = {}) {
+        return this.model.find(filter);
+    }
 }
 

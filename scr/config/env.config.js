@@ -12,6 +12,12 @@ const envConfig = {
     },
     port: {
         PORT: process.env.PORT
+    },
+    jwt: {
+        user: {
+            access_token_secret: process.env.ACCESS_TOKEN_SECRET
+        }
+
     }
 }
 
