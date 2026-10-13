@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { enmRole,enmGender } from "../../common/constant.js";
 const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
@@ -36,8 +37,8 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ["male", "female", "other"],
-        default: 'other',
+        enum: Object.values(enmGender),
+        default: enmGender.OTHER,
         required: true,
     },
     age: {
@@ -53,8 +54,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["user", "admin", "superAdmin"],
-        default: 'user',
+        enum: Object.values(enmRole),
+        default: enmRole.USER,
         required: true,
     }
 
