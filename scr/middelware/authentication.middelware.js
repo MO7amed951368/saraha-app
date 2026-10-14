@@ -1,36 +1,54 @@
 import envConfig from "../config/env.config.js";
 import UserRepository from "../DB/repository/user.repository.js";
 import { BadRReqestError, notFoundError } from "../common/utils/errors/exeption.error.js";
-
+import jwt from "jsonwebtoken";
+import { AudienceEnm, TokenTypeEnm } from "../common/constant.enum.js";
 
 const userRepo = new UserRepository()
+// Middleware function to authenticate users based on their JWT tokens
+export const authenticate = (tokenType = TokenTypeEnm.access) => {
+    return async (req, res, next) => {
+        // Get the (authorization header=token) from the request
+        const authorization = req.headers.authorization;
+        if (!authorization) {
+            throw new BadRReqestError("Token is required", 401, {}, "MISSING_TOKEN");
+        }
+        const [prefix, token] = authorization.split(" ");
+        if (prefix !== "Bearer" || !token) {
+            throw new BadRReqestError("Invalid token format", 401, {}, "INVALID_TOKEN");
+        }
+        //2-decoded data
+        const decodedData = jwt.decode(token);
 
-// Middleware function to authenticate the user based on the provided access token
-export const authenticate = async (req, res, next) => {
-    // Extract the authorization header from the request
-    const { authorization } = req.headers;
-    // Check if the authorization header is present
-    if (!authorization) {
-        throw new BadRReqestError("Authorization header is required", 401, {}, "MISSING_TOKEN");
+        if (!decodedData) {
+            throw new BadRReqestError("Invalid token", 401, {}, "INVALID_TOKEN");
+        }
+        const [decodedTokenType, audienceType] = decodedData.aud;
+        //3- check if the token type matches the expected token type
+        if (decodedTokenType !== tokenType) {
+            throw new BadRReqestError("Invalid token type", 401, {}, "INVALID_TOKEN_TYPE");
+
+        }
+        //4-verify
+        let secret
+        if (audienceType == AudienceEnm.admin) {
+            secret =
+                tokenType == TokenTypeEnm.access
+                    ? envConfig.jwt.admin.access_token_secret : envConfig.jwt.admin.refresh_token_secret
+        }
+        else {
+            secret = tokenType == TokenTypeEnm.access
+                ? envConfig.jwt.user.access_token_secret : envConfig.jwt.user.refresh_token_secret
+        }
+        const verifyData = jwt.verify(token, secret)
+        if (!verifyData) {
+            throw BadRReqestError("Invalid Signature", 401, {})
+        }
+        const user = await userRepo.findOneDocument({ _id: decodedData.sub })
+        if (!user) {
+            throw new notFoundError("User not found", 404, {}, "USER_NOT_FOUND")
+        }
+        req.authUser = user
+        next()
     }
-    // Split the authorization header to extract the token
-    const [prefix, token] = authorization.split(' ')
-    // Check if the prefix is 'Bearer' and if the token is present
-    if (prefix !== 'Bearer' || !token)
-        throw new BadRReqestError("invalid authorization header format");
-    // Verify the token and decode the user information
-
-
-    const decodedData = verfiyToken(token, envConfig.jwt.user.access_token_secret);
-    // Check if the user exists in the database based on the decoded user ID
-    const user = await userRepo.findDocumentById(decodedData._id)
-    // If the user is not found, throw an error indicating that the user does not exist
-    if (!user) {
-        throw new notFoundError("User not found", 404, {}, "USER_NOT_FOUND")
-    }
-    // Attach the authenticated user information to the request object for further processing
-    req.authUser = user
-    // Call the next middleware function in the request-response cycle
-    next()
-
 }

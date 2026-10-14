@@ -4,11 +4,11 @@ import { paramsSchema } from "./user.validation.js";
 import { BadRReqestError } from "../../common/utils/errors/exeption.error.js";
 import { authenticate } from "../../middelware/authentication.middelware.js";
 import { authorize } from "../../middelware/authorization.middelware.js";
-import { enmRole } from "../../common/constant.enum.js";
+import { enmRole, TokenTypeEnm } from "../../common/constant.enum.js";
 
 const userRouter = new Router()
 // get profile data
-userRouter.get('/profile', authenticate, authorize([enmRole.USER]), async (req, res) => {
+userRouter.get('/profile', authenticate(), async (req, res) => {
     const validateRusult = paramsSchema.validate(req.params.value)
     if (validateRusult.error) {
         throw new BadRReqestError("validation error", 400, { validationError: validateRusult.error.details }, "VALIDATION_ERROR")
@@ -19,16 +19,23 @@ userRouter.get('/profile', authenticate, authorize([enmRole.USER]), async (req, 
 
 });
 
+// get rotate token
+userRouter.get('/rotate-token', authenticate(TokenTypeEnm.refresh), async (req, res) => {
+    const result = await userService.rotateToken(req.authUser, `${req.protocol}://${req.host}`)
+    return res.status(200).json({ message: "access token ", data: result })
+
+})
+
 
 // get all user 
-userRouter.get('/', authenticate, authorize([enmRole.USER]), async (req, res) => {
+userRouter.get('/', authenticate(), authorize([enmRole.USER]), async (req, res) => {
     const result = await userService.getAllUsers()
     res.status(200).json({ message: "user retrived successfuly ", data: result })
 
 })
 //update user
 
-userRouter.patch('/update', authenticate, authorize([enmRole.USER]), async (req, res, next) => {
+userRouter.patch('/update', authenticate(), authorize([enmRole.USER]), async (req, res, next) => {
     try {
         const { firstname, lastname, email, password, gender, age, phoneNumber, role } = req.body;
         const result = await userService.updateUser({ firstname, lastname, email, password, gender, age, phoneNumber, role }, req.authUser._id)
@@ -39,7 +46,7 @@ userRouter.patch('/update', authenticate, authorize([enmRole.USER]), async (req,
 })
 
 // delete User
-userRouter.delete('/delete', authenticate, authorize([enmRole.ADMIN]), async (req, res) => {
+userRouter.delete('/delete', authenticate(), authorize([enmRole.ADMIN]), async (req, res) => {
     const deleteUser = await userService.deleteUser(req.authUser._id)
     res.status(200).json({ messsage: 'user deleted succsesfuly ', data: deleteUser })
 
