@@ -7,10 +7,12 @@ import dbConection from "./DB/db.conecction.js";
 import userRouter from "./modules/Users/user.controller.js";
 import envConfig from "./config/env.config.js";
 import errorHandler from "./middelware/errorMiddleware.js";
+import { redisConnection } from "./common/clients/redis.client.js";
 const app = new express()
 const port = envConfig.port.PORT
 
 dbConection()
+redisConnection()
 //midellware function
 app.use(express.json())
 //routers

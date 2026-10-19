@@ -28,7 +28,7 @@ userRouter.get('/rotate-token', authenticate(TokenTypeEnm.refresh), async (req, 
 
 
 // get all user 
-userRouter.get('/', authenticate(), authorize([enmRole.USER]), async (req, res) => {
+userRouter.get('/', authenticate(), authorize([enmRole.ADMIN]), async (req, res) => {
     const result = await userService.getAllUsers()
     res.status(200).json({ message: "user retrived successfuly ", data: result })
 

@@ -27,6 +27,9 @@ const envConfig = {
             refresh_token_expiration: process.env.REFRESH_TOKEN_EXPIRATION
         }
 
+    },
+    redis: {
+        url: process.env.REDIUS_URL
     }
 }
 

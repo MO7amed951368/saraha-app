@@ -4,9 +4,10 @@ import { BadRReqestError, conflictError } from "../../common/utils/errors/exepti
 import { compareTwoHashes, hash } from "../../common/utils/security/hash.security.js";
 import envConfig from "../../config/env.config.js";
 import { generatToken } from "../../common/utils/token.utils.js";
+import { set } from "../../common/services/redis.service.js";
 
 const userRepo = new UserRepository();
-const {user:userEnvConfig,admin:adminEnvConfig} = envConfig.jwt
+const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt
 
 export const signup = async (body) => {
     const { firstname, lastname, email, password, gender, age, phoneNumber, role } = body;
@@ -30,18 +31,24 @@ export const signup = async (body) => {
 export const signIn = async (body, issuer) => {
     const { email, password } = body;
 
-// Check if the email exists in the database
+    // Check if the email exists in the database
     const user = await userRepo.findOneDocument({ email });
     if (!user)
         throw new BadRReqestError("invalid email or password", 400, {}, "INVALID_CREDENTIALS");
 
-// Compare the provided password with the stored hashed password
+    // Compare the provided password with the stored hashed password
     const isPasswordMatched = await compareTwoHashes(user.password, password);
     if (!isPasswordMatched)
         throw new BadRReqestError("invalid email or password", 400, {}, "INVALID_CREDENTIALS");
 
-   // Generate JWT tokens (access and refresh) for the authenticated user
-    const tokens =await generatToken(user ,issuer)
-  
+    // Generate JWT tokens (access and refresh) for the authenticated user
+    const tokens = await generatToken(user, issuer)
+
     return tokens;
 };
+//logOut user 
+export const logOut = async () => {
+    const result = await set({ key: 'email', value: 'm.rafat@gmail.com', options: { EX: 30 } })
+    return result
+
+}

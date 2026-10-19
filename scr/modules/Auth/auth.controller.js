@@ -12,7 +12,7 @@ authRouter.post('/register', async (req, res) => {
     if (validateRusult.error) {
         throw new BadRReqestError("validation error", 400, { validationError: validateRusult.error.details }, "VALIDATION_ERROR")
     }
-// Call the signup service to create a new user
+    // Call the signup service to create a new user
     const result = await AuthService.signup(validateRusult.value)
     res.status(201).json({ message: 'user signup succssfuly', user: result })
 })
@@ -25,9 +25,17 @@ authRouter.post('/login', async (req, res) => {
         throw new BadRReqestError("validation error", 400, { validationError: validateRusult.error.details }, "VALIDATION_ERROR")
     }
     // Call the signIn service to authenticate the user and generate an access token
-    const user = await AuthService.signIn(validateRusult.value,`${req.protocol}://${req.host}`)
+    const user = await AuthService.signIn(validateRusult.value, `${req.protocol}://${req.host}`)
     res.status(200).json({ message: 'user login successfuly ', data: user })
 
 
+})
+
+
+//logOut
+
+authRouter.post('/logout', async (req, res, next) => {
+    const result = await AuthService.logOut()
+    res.status(200).json({ message: 'user logout successfuly ', data: result })
 })
 export default authRouter

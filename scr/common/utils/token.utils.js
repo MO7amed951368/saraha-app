@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { randomUUID } from "crypto";
 import { enmRole, TokenTypeEnm } from "../constant.enum.js";
 import envConfig from "../../config/env.config.js";
+import { v4 as uuidv4 } from "uuid";
 
 const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt
 
@@ -22,26 +22,23 @@ export const generatToken = async (payload, issuer) => {
         audience = enmRole.USER
     }
     // Generate a unique identifier for the JWT for both access and refresh tokens
-    const jwtId = randomUUID()
+    const jwtId = uuidv4()
     // Generate the access token 
     const accessToken = jwt.sign({ sub: payload._id.toString() }, accessSecret, {
-        issuer, // Set the issuer of the token
-        audience: [TokenTypeEnm.access, audience], // Set the audience of the token
-        expiresIn: envConfig.jwt.expiration.access_token_expiration, // Set the expiration time for the access token
-        jwtid: jwtId // Set the unique identifier for the token
+        issuer,
+        audience: [TokenTypeEnm.access, audience],
+        expiresIn: envConfig.jwt.expiration.access_token_expiration,
+        jwtid: jwtId
     });
     // Generate the refresh token
     const refreshToken = jwt.sign(
-        // Payload containing the user ID for the refresh token
         { sub: payload._id.toString() },
-        // Use the appropriate secret key for the refresh token
         refreshSecret,
-        // Set the options for the refresh token
         {
-            issuer, // Set the issuer of the token
-            audience: [TokenTypeEnm.refresh, audience], // Set the audience of the token
-            expiresIn: envConfig.jwt.expiration.refresh_token_expiration, // Set the expiration time for the refresh token
-            jwtid: jwtId // Set the unique identifier for the token
+            issuer,
+            audience: [TokenTypeEnm.refresh, audience],
+            expiresIn: envConfig.jwt.expiration.refresh_token_expiration,
+            jwtid: jwtId
         });
 
     return { accessToken, refreshToken };
