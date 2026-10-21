@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
-import { enmRole, TokenTypeEnm } from "../constant.enum.js";
-import envConfig from "../../config/env.config.js";
-import { v4 as uuidv4 } from "uuid";
+
 
 // const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt
 
@@ -46,6 +44,8 @@ import { v4 as uuidv4 } from "uuid";
 
 
 // single source of truth
+
+
 export const generatToken = (payload, secret, option) => {
     return jwt.sign(payload, secret, option)
 

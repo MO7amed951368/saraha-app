@@ -1,18 +1,18 @@
-export const enmGender = {
+export const genderEnum = {
     MALE: "male",
     FEMALE: "female",
-    OTHER: "other"
+
 }
-export const enmRole = {
+export const roleEnum = {
     USER: "user",
     ADMIN: "admin",
-    SUPER_ADMIN: "superAdmin"
-}   
-export const TokenTypeEnm = {
+
+}
+export const TokenTypeEnum = {
     access: "access",
     refresh: "refresh"
-}   
-export const AudienceEnm = {
+}
+export const AudienceEnum = {
     user: "user",
     admin: "admin"
 }

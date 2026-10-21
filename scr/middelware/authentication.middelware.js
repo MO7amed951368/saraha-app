@@ -1,8 +1,6 @@
 import envConfig from "../config/env.config.js";
 import UserRepository from "../DB/repository/user.repository.js";
-import { BadRReqestError, notFoundError } from "../common/utils/errors/exeption.error.js";
-import jwt from "jsonwebtoken";
-import { AudienceEnm, TokenTypeEnm } from "../common/constant.enum.js";
+import { BadRReqestError } from "../common/utils/errors/exeption.error.js";
 import { verifyToken } from "../common/utils/token.utils.js";
 
 const userRepo = new UserRepository()
