@@ -25,7 +25,7 @@ authRouter.post('/login', async (req, res) => {
         throw new BadRReqestError("validation error", 400, { validationError: validateRusult.error.details }, "VALIDATION_ERROR")
     }
     // Call the signIn service to authenticate the user and generate an access token
-    const user = await AuthService.signIn(validateRusult.value, `${req.protocol}://${req.host}`)
+    const user = await AuthService.signIn(validateRusult.value)
     res.status(200).json({ message: 'user login successfuly ', data: user })
 
 
@@ -34,8 +34,10 @@ authRouter.post('/login', async (req, res) => {
 
 //logOut
 
-authRouter.post('/logout', async (req, res, next) => {
-    const result = await AuthService.logOut()
+authRouter.post('/logout',  async (req, res, next) => {
+    console.log({ data: req.accessTokenData });
+
+    const result = await AuthService.logOut(req.accessTokenData)
     res.status(200).json({ message: 'user logout successfuly ', data: result })
 })
 export default authRouter

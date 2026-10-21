@@ -1,19 +1,25 @@
 import { hash } from "argon2";
 import UserRepository from "../../DB/repository/user.repository.js";
 import { decrypt, encrypt } from "../../common/utils/security/encryption.security.js";
-import { generatToken } from "../../common/utils/token.utils.js";
+import envConfig from "../../config/env.config.js";
+import { verifyToken } from "../../common/utils/token.utils.js";
+
+
+
 const userRepo = new UserRepository()
-
-
+//get profile User
 export const getUserProfile = async (user) => {
+
     if (user.phoneNumber) user.phoneNumber = decrypt(user.phoneNumber);
     return user;
 
 }
-
+// get all users
 export const getAllUsers = async () => {
     return await userRepo.findAllDocuments()
 }
+
+// update user
 export const updateUser = async (body) => {
     const { firstname, lastname, email, password, gender, age, phoneNumber, role } = body
     const updateFields = Object.fromEntries(
@@ -30,13 +36,13 @@ export const updateUser = async (body) => {
         { new: true, runValidators: true }
     )
 }
-
+//delete User
 export const deleteUser = async (id) => {
     return await userRepo.findAndDeleteDocument(id)
 }
 //rotate token
-export const rotateToken = async (user, issuer) => {
-    const tokens = await generatToken(user, issuer)
+// export const rotateToken = async (user, issuer) => {
+//     const tokens = await generatToken(user, issuer)
 
-    return tokens;
-}
+//     return tokens;
+// }

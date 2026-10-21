@@ -42,9 +42,16 @@ export const signIn = async (body, issuer) => {
         throw new BadRReqestError("invalid email or password", 400, {}, "INVALID_CREDENTIALS");
 
     // Generate JWT tokens (access and refresh) for the authenticated user
-    const tokens = await generatToken(user, issuer)
+    // const tokens = await generatToken(user, issuer)
 
-    return tokens;
+    // return tokens;
+    const accessToken = generatToken(
+        { _id: user._id, email: user.email, role: user.role },
+        envConfig.jwt.user.access_token_secret,
+        { expiresIn: "1h" }
+    )
+    return accessToken;
+
 };
 //logOut user 
 export const logOut = async () => {
