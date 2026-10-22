@@ -40,9 +40,4 @@ export const updateUser = async (body) => {
 export const deleteUser = async (id) => {
     return await userRepo.findAndDeleteDocument(id)
 }
-//rotate token
-// export const rotateToken = async (user, issuer) => {
-//     const tokens = await generatToken(user, issuer)
 
-//     return tokens;
-// }

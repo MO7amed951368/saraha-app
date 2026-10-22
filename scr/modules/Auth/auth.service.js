@@ -3,8 +3,9 @@ import { encrypt } from "../../common/utils/security/encryption.security.js";
 import { BadRReqestError, conflictError } from "../../common/utils/errors/exeption.error.js";
 import { compareTwoHashes, hash } from "../../common/utils/security/hash.security.js";
 import envConfig from "../../config/env.config.js";
-import { generatToken } from "../../common/utils/token.utils.js";
+import { decodeToken, generatToken } from "../../common/utils/token.utils.js";
 import { set } from "../../common/services/redis.service.js";
+import { TokenTypeEnum } from "../../common/constant.enum.js";
 
 const userRepo = new UserRepository();
 const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt
@@ -41,18 +42,31 @@ export const signIn = async (body, issuer) => {
     if (!isPasswordMatched)
         throw new BadRReqestError("invalid email or password", 400, {}, "INVALID_CREDENTIALS");
 
-    // Generate JWT tokens (access and refresh) for the authenticated user
-    // const tokens = await generatToken(user, issuer)
 
-    // return tokens;
     const accessToken = generatToken(
         { _id: user._id, email: user.email, role: user.role },
-        envConfig.jwt.user.access_token_secret,
-        { expiresIn: "1h" }
+        envConfig.jwt.admin.access_token_secret,
+        { expiresIn: envConfig.jwt.admin.access_token_expiration }
     )
-    return accessToken;
+    const refreshToken = generatToken(
+        { _id: user._id, email: user.email, role: user.role },
+        envConfig.jwt.admin.refresh_token_secret,
+        { expiresIn: envConfig.jwt.admin.refresh_token_expiration }
+    )
+    return { accessToken, refreshToken };
 
 };
+
+//rotate token
+export const rotateToken = async (userRefreshToken) => {
+    const user = await decodeToken({ token: userRefreshToken, tokenType: TokenTypeEnum.refresh })
+    const accessToken = generatToken(
+        { _id: user._id, email: user.email, role: user.role },
+        envConfig.jwt.admin.access_token_secret,
+        { expiresIn: envConfig.jwt.admin.access_token_expiration }
+    )
+    return accessToken;
+}
 //logOut user 
 export const logOut = async () => {
     const result = await set({ key: 'email', value: 'm.rafat@gmail.com', options: { EX: 30 } })

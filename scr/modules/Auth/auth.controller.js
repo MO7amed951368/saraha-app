@@ -31,10 +31,21 @@ authRouter.post('/login', async (req, res) => {
 
 })
 
+// get rotate token
+authRouter.post('/rotate-token', async (req, res, next) => {
 
+    const { refreshtoken } = req.headers
+    console.log(refreshtoken);
+
+    if (!refreshtoken) throw new BadRReqestError("Refresh token is required", 401, {}, "MISSING_TOKEN")
+
+    const result = await AuthService.rotateToken(refreshtoken)
+    return res.status(200).json({ message: "access token ", data: result })
+
+})
 //logOut
 
-authRouter.post('/logout',  async (req, res, next) => {
+authRouter.post('/logout', async (req, res, next) => {
     console.log({ data: req.accessTokenData });
 
     const result = await AuthService.logOut(req.accessTokenData)

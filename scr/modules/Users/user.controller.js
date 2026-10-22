@@ -20,13 +20,6 @@ userRouter.get('/profile', authenticate, authorize([roleEnum.ADMIN, roleEnum.USE
 
 });
 
-// get rotate token
-userRouter.get('/rotate-token', async (req, res) => {
-    const result = await userService.rotateToken(req.authUser, `${req.protocol}://${req.host}`)
-    return res.status(200).json({ message: "access token ", data: result })
-
-})
-
 // get all user 
 userRouter.get('/', authenticate, authorize([roleEnum.ADMIN]), async (req, res) => {
     const result = await userService.getAllUsers()

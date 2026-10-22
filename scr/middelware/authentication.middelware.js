@@ -1,7 +1,8 @@
 import envConfig from "../config/env.config.js";
 import UserRepository from "../DB/repository/user.repository.js";
 import { BadRReqestError } from "../common/utils/errors/exeption.error.js";
-import { verifyToken } from "../common/utils/token.utils.js";
+import { decodeToken, verifyToken } from "../common/utils/token.utils.js";
+import { TokenTypeEnum } from "../common/constant.enum.js";
 
 const userRepo = new UserRepository()
 // Middleware function to authenticate users based on their JWT tokens
@@ -69,13 +70,14 @@ export const authenticate = async (req, res, next) => {
     if (prefix !== "Bearer" || !token) {
         throw new BadRReqestError("Invalid token format", 401, {}, "INVALID_TOKEN");
     }
-    const decodedData = verifyToken(token, envConfig.jwt.user.access_token_secret)
+    // const decodedData = verifyToken(token, envConfig.jwt.user.access_token_secret)
 
-    const user = await userRepo.findDocumentById(decodedData._id)
-    if (!user) {
-        throw new BadRReqestError("user not found");
+    // const user = await userRepo.findDocumentById(decodedData._id)
+    // if (!user) {
+    //     throw new BadRReqestError("user not found");
 
-    }
+    // }
+    const user = await decodeToken({ token, tokenType: TokenTypeEnum.access })
     req.authUser = user
     next()
 
