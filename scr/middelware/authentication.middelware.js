@@ -18,7 +18,8 @@ export const authenticate = async (req, res, next) => {
         throw new BadRReqestError("Invalid token format", 401, {}, "INVALID_TOKEN");
     }
 
-    const { user, tokenData } = decodeToken({ token, tokenType: TokenTypeEnum.access })
+    const { user, tokenData } = await decodeToken({ token, tokenType: TokenTypeEnum.access })
+    console.log("karim test user", user)
     req.authUser = user
     req.accessTokenData = tokenData
     next()

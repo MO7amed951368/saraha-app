@@ -44,5 +44,5 @@ export const deleteUser = async (id) => {
 export const uploadProfilePicture = async (user, file) => {
     console.log(user);
 
-    return userRepo.updateDocumentById(user._id, { profileImage: file.path }, { new: true })
+    return userRepo.updateDocumentById(user._id, { profileImage: file.path }, { returnDocument: 'after' })
 }

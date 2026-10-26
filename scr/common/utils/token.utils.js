@@ -17,7 +17,7 @@ export const verifyToken = (token, secret) => {
     return jwt.verify(token, secret)
 }
 
-export const decodeToken = ({ token, tokenType }) => {
+export const decodeToken = async ({ token, tokenType }) => {
 
     const data = jwt.decode(token)
     // console.log({ data: data });
@@ -40,7 +40,7 @@ export const decodeToken = ({ token, tokenType }) => {
 
     const decodedData = verifyToken(token, signture)
 
-    const user = userRepo.findDocumentById(decodedData._id)
+    const user = await userRepo.findDocumentById(decodedData._id)
     if (!user) {
         throw new BadRReqestError("user not found");
 
