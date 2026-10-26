@@ -16,3 +16,7 @@ export const TTl = (key) => {
 export const expire = (key, expireIn) => {
     return redisClient.expire(key, expireIn)
 }
+export const calcTTL = (expiration) => {
+    const currentTime = Math.floor(Date.now() / 1000)
+    return expiration - currentTime
+}

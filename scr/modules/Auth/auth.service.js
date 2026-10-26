@@ -4,14 +4,15 @@ import { BadRReqestError, conflictError } from "../../common/utils/errors/exepti
 import { compareTwoHashes, hash } from "../../common/utils/security/hash.security.js";
 import envConfig from "../../config/env.config.js";
 import { decodeToken, generatToken } from "../../common/utils/token.utils.js";
-import { set } from "../../common/services/redis.service.js";
+import { set, calcTTL } from "../../common/services/redis.service.js";
 import { TokenTypeEnum } from "../../common/constant.enum.js";
+import { v4 as uuidv4 } from "uuid";
 
 const userRepo = new UserRepository();
 const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt
 
 export const signup = async (body) => {
-    const { firstname, lastname, email, password, gender, age, phoneNumber, role } = body;
+    const { firstname, lastname, email, password, gender, age, phoneNumber, role ,profileImage } = body;
     const isEmailExsist = await userRepo.findOneDocument({ email });
     if (isEmailExsist) throw new conflictError("email already exsist", 409, { duplicateEmail: email }, "EMAIL_ALREADY_EXISTS");
     let encryptedPhone;
@@ -25,7 +26,8 @@ export const signup = async (body) => {
         gender,
         age,
         phoneNumber: encryptedPhone || undefined,
-        role: role || 'user'
+        role: role || 'user',
+        profileImage
     });
 };
 //login user
@@ -46,12 +48,12 @@ export const signIn = async (body, issuer) => {
     const accessToken = generatToken(
         { _id: user._id, email: user.email, role: user.role },
         envConfig.jwt.admin.access_token_secret,
-        { expiresIn: envConfig.jwt.admin.access_token_expiration }
+        { expiresIn: envConfig.jwt.admin.access_token_expiration, jwtid: uuidv4() }
     )
     const refreshToken = generatToken(
         { _id: user._id, email: user.email, role: user.role },
         envConfig.jwt.admin.refresh_token_secret,
-        { expiresIn: envConfig.jwt.admin.refresh_token_expiration }
+        { expiresIn: envConfig.jwt.admin.refresh_token_expiration, jwtid: uuidv4() }
     )
     return { accessToken, refreshToken };
 
@@ -63,13 +65,28 @@ export const rotateToken = async (userRefreshToken) => {
     const accessToken = generatToken(
         { _id: user._id, email: user.email, role: user.role },
         envConfig.jwt.admin.access_token_secret,
-        { expiresIn: envConfig.jwt.admin.access_token_expiration }
+        { expiresIn: envConfig.jwt.admin.access_token_expiration, jwtid: uuidv4() }
     )
     return accessToken;
 }
 //logOut user 
-export const logOut = async () => {
-    const result = await set({ key: 'email', value: 'm.rafat@gmail.com', options: { EX: 30 } })
-    return result
+export const logOut = async (accessTokenData, refreshTokenData) => {
+    const { exp: accessExpiration, jti: accessId } = accessTokenData
+    const { exp: refrehExpiration, jti: refrehId } = refreshTokenData
+
+    const accessTTL = calcTTL(accessExpiration)
+
+    const refreshTTL = calcTTL(refrehExpiration)
+
+    console.log(accessTTL, refreshTTL);
+
+    Promise.all(
+
+        [
+            set({ key: `bl_${TokenTypeEnum.access}_${accessId}`, value: "true", options: { EX: accessTTL } }),
+            set({ key: `bl_${TokenTypeEnum.refresh}_${refrehId}`, value: "true", options: { EX: refreshTTL } })
+        ]
+    )
+    return { accessTTL, refreshTTL }
 
 }

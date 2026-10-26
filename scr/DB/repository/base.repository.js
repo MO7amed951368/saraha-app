@@ -2,20 +2,20 @@ export default class BaseRepository {
     constructor(model) {
         this.model = model;
     }
-        
+
     createNewDocument(data) {
         return this.model.create(data);
     }
-       
+
     findDocumentById(_id) {
 
         return this.model.findById(_id);
     }
-       
+
     findOneDocument(filter = {}) {
         return this.model.findOne(filter);
     }
-      
+
     findAndUpdateDocument(filter, data, options = {}) {
         return this.model.findOneAndUpdate(filter, data, options);
     }
@@ -25,6 +25,10 @@ export default class BaseRepository {
     }
     findAllDocuments(filter = {}) {
         return this.model.find(filter);
+    }
+
+    updateDocumentById(_id, data, options) {
+        return this.model.findByIdAndUpdate(_id, data, options)
     }
 }
 

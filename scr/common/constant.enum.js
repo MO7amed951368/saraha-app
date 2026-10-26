@@ -16,3 +16,9 @@ export const AudienceEnum = {
     user: "user",
     admin: "admin"
 }
+
+export const allowedExtension = {
+    image: ['png', 'jpeg'],
+    vido: ["mp4"],
+    application: ['xlxs', 'pdf']
+}

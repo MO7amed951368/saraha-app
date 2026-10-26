@@ -6,6 +6,9 @@ import { BadRReqestError } from "../../common/utils/errors/exeption.error.js";
 import { authorize } from "../../middelware/authorization.middelware.js";
 import { roleEnum } from "../../common/constant.enum.js";
 import { authenticate } from "../../middelware/authentication.middelware.js";
+import { uploadMulter } from "../../middelware/multer.middelware.js";
+import { fileTypeFromFile } from 'file-type';
+import { validateMagicNumber } from "../../middelware/validate.middelware.js";
 
 const userRouter = new Router()
 // get profile data
@@ -44,6 +47,21 @@ userRouter.delete('/delete', authenticate, authorize([roleEnum.ADMIN, roleEnum.U
     res.status(200).json({ messsage: 'user deleted succsesfuly ', data: deleteUser })
 
 
+
+})
+// upload profile picture
+userRouter.patch('/upload', authenticate, uploadMulter({ desierdPath: 'profiles' }).single("profile"), validateMagicNumber, async (req, res, next) => {
+    const file = req.file
+    if (!file) {
+        throw new BadRReqestError("please uploade profile picture");
+    }
+    const { authUser } = req
+    console.log(authUser);
+    console.log("File Path:", file?.path);
+    const result = await userService.uploadProfilePicture(authUser, file)
+    console.log("Updated User Result:", result);
+    res.status(200).json({ messsage: 'profile picture uploaded succsesfuly ', data: result })
+    console.log(result);
 
 })
 export default userRouter

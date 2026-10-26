@@ -40,4 +40,9 @@ export const updateUser = async (body) => {
 export const deleteUser = async (id) => {
     return await userRepo.findAndDeleteDocument(id)
 }
+//upload profile picture
+export const uploadProfilePicture = async (user, file) => {
+    console.log(user);
 
+    return userRepo.updateDocumentById(user._id, { profileImage: file.path }, { new: true })
+}
