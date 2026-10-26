@@ -55,14 +55,9 @@ userRouter.patch('/upload', authenticate, uploadMulter({ desierdPath: 'profiles'
     if (!file) {
         throw new BadRReqestError("please uploade profile picture");
     }
-    //console.log(req.authUser)
     const { authUser } = req
-    //console.log(authUser);
-    //console.log("File Path:", file?.path);
     const result = await userService.uploadProfilePicture(authUser, file)
-    console.log("Updated User Result:", result);
     res.status(200).json({ messsage: 'profile picture uploaded succsesfuly ', data: result })
-    console.log(result);
 
 })
 export default userRouter

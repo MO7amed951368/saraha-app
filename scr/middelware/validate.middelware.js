@@ -29,7 +29,6 @@ export const validateMagicNumber = async (req, res, next) => {
     console.log(filePath);
 
     const result = await fileTypeFromFile(filePath)
-    console.log(result);
 
 
     if (result && result.mime) {
@@ -37,7 +36,6 @@ export const validateMagicNumber = async (req, res, next) => {
         const [fileType, inputFileExtension] = result.mime.split('/')
 
         const isValid = allowedExtension[fileType]?.includes(inputFileExtension)
-        console.log(isValid);
 
         if (!isValid) {
 

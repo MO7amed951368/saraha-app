@@ -19,7 +19,6 @@ export const authenticate = async (req, res, next) => {
     }
 
     const { user, tokenData } = await decodeToken({ token, tokenType: TokenTypeEnum.access })
-    console.log("karim test user", user)
     req.authUser = user
     req.accessTokenData = tokenData
     next()
