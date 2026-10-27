@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
-import { BadRReqestError } from "./errors/exeption.error.js";
+import { BadRReqestError, unauthorizedError } from "./errors/exeption.error.js";
 import envConfig from "../../config/env.config.js";
 import UserRepository from "../../DB/repository/user.repository.js";
 import { TokenTypeEnum } from "../constant.enum.js";
+import { get } from "../services/redis.service.js";
 
 // single source of truth
 
@@ -38,8 +39,12 @@ export const decodeToken = async ({ token, tokenType }) => {
     }
     // console.log({ signture: signture });
 
-    const decodedData = verifyToken(token, signture)
-
+    const decodedData =  verifyToken(token, signture)
+// console.log(`bl_${tokenType}_${decodedData.jti}`);
+  const isTokenBlackList= await get(`bl_${tokenType}_${decodedData.jti}`)
+  if (isTokenBlackList) {
+    throw new unauthorizedError("This token is revoked",401,'UNAUTHORIZE');
+  }
     const user = await userRepo.findDocumentById(decodedData._id)
     if (!user) {
         throw new BadRReqestError("user not found");

@@ -78,7 +78,7 @@ export const logOut = async (accessTokenData, refreshTokenData) => {
 
     const refreshTTL = calcTTL(refrehExpiration)
 
-    console.log(accessTTL, refreshTTL);
+    // console.log(accessTTL, refreshTTL);
 
     Promise.all(
 

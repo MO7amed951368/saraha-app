@@ -15,6 +15,8 @@ dbConection()
 redisConnection()
 //midellware function
 app.use(express.json())
+
+app.use('/uploads', express.static('uploads'))
 //routers
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter)

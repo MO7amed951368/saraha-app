@@ -44,8 +44,8 @@ authRouter.post('/rotate-token', async (req, res, next) => {
 //logOut
 
 authRouter.post('/logout', authenticate, decodedRefreshToken, async (req, res, next) => {
-    console.log({ dataAccess: req.accessTokenData });
-    console.log({ dataRefresh: req.refreshTokenData });
+    // console.log({ dataAccess: req.accessTokenData });
+    // console.log({ dataRefresh: req.refreshTokenData });
 
     const result = await AuthService.logOut(req.accessTokenData, req.refreshTokenData)
     res.status(200).json({ message: 'user logout successfuly ', data: result })
