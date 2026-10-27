@@ -23,8 +23,28 @@ export const decodeToken = async ({ token, tokenType }) => {
     const data = jwt.decode(token)
     // console.log({ data: data });
     if (!data.role) throw new BadRReqestError("role not found in token");
-    const roleSignture = jwtConfig[data.role]
-    // console.log({ roleSignture: roleSignture }, { tokenType: tokenType });
+    // get signature based on role
+    const signture = getSignuatureByRoleAndType({ role: data.role, tokenType })
+    // verify token data
+    const decodedData = verifyToken(token, signture)
+    // check if token is black list 
+    const isTokenBlackList = await get(`bl_${tokenType}_${decodedData.jti}`)
+    if (isTokenBlackList) {
+        throw new unauthorizedError("This token is revoked", 401, 'UNAUTHORIZE');
+    }
+    // get user from dataabase
+    const user = await userRepo.findDocumentById(decodedData._id)
+    if (!user) {
+        throw new BadRReqestError("user not found");
+
+    }
+    return { user, tokenData: decodedData }
+
+}
+
+const getSignuatureByRoleAndType = ({ role, tokenType }) => {
+    const roleSignture = jwtConfig[role]
+
     let signture;
     switch (tokenType) {
         case TokenTypeEnum.access:
@@ -38,18 +58,5 @@ export const decodeToken = async ({ token, tokenType }) => {
 
     }
     // console.log({ signture: signture });
-
-    const decodedData =  verifyToken(token, signture)
-// console.log(`bl_${tokenType}_${decodedData.jti}`);
-  const isTokenBlackList= await get(`bl_${tokenType}_${decodedData.jti}`)
-  if (isTokenBlackList) {
-    throw new unauthorizedError("This token is revoked",401,'UNAUTHORIZE');
-  }
-    const user = await userRepo.findDocumentById(decodedData._id)
-    if (!user) {
-        throw new BadRReqestError("user not found");
-
-    }
-    return { user, tokenData: decodedData }
-
+    return signture
 }

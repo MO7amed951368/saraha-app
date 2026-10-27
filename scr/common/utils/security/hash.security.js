@@ -1,7 +1,8 @@
-import * as argon2 from "argon2"
+
+import bcrypt from "bcrypt"
 export const hash = (text) => {
-    return argon2.hash(text)
+    return bcrypt.hash(text, 10)
 }
 export const compareTwoHashes = (hash, text) => {
-    return argon2.verify(hash, text)
+    return bcrypt.compare(text, hash)
 }
