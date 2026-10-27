@@ -12,7 +12,7 @@ const userRepo = new UserRepository();
 const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt
 
 export const signup = async (body) => {
-    const { firstname, lastname, email, password, gender, age, phoneNumber, role ,profileImage } = body;
+    const { firstname, lastname, email, password, gender, age, phoneNumber, role ,profileImage ,profileCoversImage} = body;
     const isEmailExsist = await userRepo.findOneDocument({ email });
     if (isEmailExsist) throw new conflictError("email already exsist", 409, { duplicateEmail: email }, "EMAIL_ALREADY_EXISTS");
     let encryptedPhone;
@@ -27,7 +27,8 @@ export const signup = async (body) => {
         age,
         phoneNumber: encryptedPhone || undefined,
         role: role || 'user',
-        profileImage
+        profileImage,
+        profileCoversImage
     });
 };
 //login user

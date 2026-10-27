@@ -49,6 +49,7 @@ const userSchema = new mongoose.Schema({
     },
 
     profileImage: String,
+    profileCoversImage: [String],
     phoneNumber: {
         type: String,
         required: true,

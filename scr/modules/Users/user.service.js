@@ -44,3 +44,14 @@ export const deleteUser = async (id) => {
 export const uploadProfilePicture = async (user, file) => {
     return userRepo.updateDocumentById(user._id, { profileImage: file.path }, { returnDocument: 'after' })
 }
+//upload profile picture
+export const uploadProfileCover = async (user, files) => {
+    // استخراج مسارات الصور المرفوعة
+    const filePaths = files.map(file => file.path)
+
+    return userRepo.updateDocumentById(
+        user._id, 
+        { profileCoversImage: filePaths }, // لو الحقل في الـ Schema مخصص للصور المتعددة
+        { returnDocument: 'after' }
+    )
+}

@@ -8,7 +8,7 @@ import { roleEnum } from "../../common/constant.enum.js";
 import { authenticate } from "../../middelware/authentication.middelware.js";
 import { uploadMulter } from "../../middelware/multer.middelware.js";
 import { fileTypeFromFile } from 'file-type';
-import { validateMagicNumber } from "../../middelware/validate.middelware.js";
+import { validateMagicNumber } from "../../middelware/validateMagicNumber.js";
 
 const userRouter = new Router()
 // get profile data
@@ -59,5 +59,15 @@ userRouter.patch('/upload', authenticate, uploadMulter({ desierdPath: 'profiles'
     const result = await userService.uploadProfilePicture(authUser, file)
     res.status(200).json({ messsage: 'profile picture uploaded succsesfuly ', data: result })
 
+})
+// upload cover picture
+userRouter.patch('/upload-cover', authenticate, uploadMulter({ desierdPath: 'covers' }).array("covers", 3), validateMagicNumber, async (req, res, next) => {
+    const files = req.files
+    if (!files || files.length === 0) {
+        throw new BadRReqestError("Please upload cover pictures"); 
+    }
+    const { authUser } = req
+    const result = await userService.uploadProfileCover(authUser, files)
+    res.status(200).json({ message: 'Profile covers uploaded successfully', data: result })
 })
 export default userRouter
