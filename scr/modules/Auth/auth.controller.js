@@ -50,4 +50,12 @@ authRouter.post('/logout', authenticate, decodedRefreshToken, async (req, res, n
     const result = await AuthService.logOut(req.accessTokenData, req.refreshTokenData)
     res.status(200).json({ message: 'user logout successfuly ', data: result })
 })
+// varification 
+authRouter.patch('/confirm-email', async (req, res) => {
+    const { email, otp } = req.body
+    const result = await AuthService.confirmEmail(email, otp)
+    return res.status(200).json({ message: "email confirmed successfuly", data: result })
+
+})
 export default authRouter
+

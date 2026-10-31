@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema({
         enum: Object.values(roleEnum),
         default: roleEnum.USER,
         required: true,
+    },
+    isEmailVerified :{
+        type:Boolean,
+        default:false
     }
 
 }, {

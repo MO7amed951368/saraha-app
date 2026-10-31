@@ -22,3 +22,5 @@ export const allowedExtension = {
     vido: ["mp4"],
     application: ['xlxs', 'pdf']
 }
+
+export const emailVarification = 300
