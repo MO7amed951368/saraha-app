@@ -46,12 +46,11 @@ export const uploadProfilePicture = async (user, file) => {
 }
 //upload profile picture
 export const uploadProfileCover = async (user, files) => {
-    // استخراج مسارات الصور المرفوعة
     const filePaths = files.map(file => file.path)
 
     return userRepo.updateDocumentById(
-        user._id, 
-        { profileCoversImage: filePaths }, // لو الحقل في الـ Schema مخصص للصور المتعددة
+        user._id,
+        { profileCoversImage: filePaths },
         { returnDocument: 'after' }
     )
 }

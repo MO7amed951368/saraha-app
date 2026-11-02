@@ -5,9 +5,9 @@ import { allowedExtension } from "../common/constant.enum.js";
 import { BadRReqestError } from "../common/utils/errors/exeption.error.js";
 
 
-export const uploadMulter = ({ desierdPath }) => {
+export const uploadMulter = ({ desiredPath }) => {
 
-    const fullDestinationPath = `uploads/${desierdPath} `
+    const fullDestinationPath = `uploads/${desiredPath} `
     if (!fs.existsSync(fullDestinationPath)) {
         fs.mkdirSync(fullDestinationPath, { recursive: true })
 

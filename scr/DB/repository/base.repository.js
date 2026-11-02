@@ -6,7 +6,6 @@ export default class BaseRepository {
     createNewDocument(data) {
         return this.model.create(data);
     }
-
     findDocumentById(_id) {
 
         return this.model.findById(_id);
@@ -29,6 +28,12 @@ export default class BaseRepository {
 
     updateDocumentById(_id, data, options) {
         return this.model.findByIdAndUpdate(_id, data, options)
+    }
+    findDocuments(filter = {}, projection = null, options = {}) {
+        if(options.populate){
+            return this.model.find(filter, projection, options).populate(options.populate)
+        }
+        return this.model.find(filter, projection, options);
     }
 }
 

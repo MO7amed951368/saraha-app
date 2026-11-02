@@ -50,7 +50,7 @@ userRouter.delete('/delete', authenticate, authorize([roleEnum.ADMIN, roleEnum.U
 
 })
 // upload profile picture
-userRouter.patch('/upload', authenticate, uploadMulter({ desierdPath: 'profiles' }).single("profile"), validateMagicNumber, async (req, res, next) => {
+userRouter.patch('/upload', authenticate, uploadMulter({ desiredPath: 'profiles' }).single("profile"), validateMagicNumber, async (req, res, next) => {
     const file = req.file
     if (!file) {
         throw new BadRReqestError("please uploade profile picture");
@@ -61,7 +61,7 @@ userRouter.patch('/upload', authenticate, uploadMulter({ desierdPath: 'profiles'
 
 })
 // upload cover picture
-userRouter.patch('/upload-cover', authenticate, uploadMulter({ desierdPath: 'covers' }).array("covers", 3), validateMagicNumber, async (req, res, next) => {
+userRouter.patch('/upload-cover', authenticate, uploadMulter({ desiredPath: 'covers' }).array("covers", 3), validateMagicNumber, async (req, res, next) => {
     const files = req.files
     if (!files || files.length === 0) {
         throw new BadRReqestError("Please upload cover pictures"); 
