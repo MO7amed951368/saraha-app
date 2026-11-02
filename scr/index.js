@@ -49,14 +49,4 @@ app.listen(port, () => {
 })
 
 
-// try {
-//   await sendEmail(
-//     "mohthree1990@gmail.com",
-//     "Test Email",
-//     "<h1>Hello from Saraha app</h1>"
-//   );
-//   console.log("Server is ready to take our messages");
-// } catch (err) {
-//   console.error("Verification failed:", err);
-// }
 
