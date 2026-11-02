@@ -182,3 +182,37 @@ export const resetPassword = async (email, otp, newPassword) => {
 
     return { message: "Password reset successfully" };
 };
+// resend otp
+
+export const resendEmailOtp = async (email) => {
+    // 1. Check if the user exists
+    const user = await userRepo.findOneDocument({ email });
+    if (!user) {
+        throw new BadRReqestError("User not found", 404, {}, "USER_NOT_FOUND");
+    }
+
+    if (user.isEmailVerified) {
+        throw new BadRReqestError("Email is already verified", 400, {}, "ALREADY_VERIFIED");
+    }
+
+    // 2. Generate a new 6-digit OTP
+    const otp = crypto.randomInt(100000, 1000000).toString();
+    const hashedOtp = await hash(otp);
+
+    // 3. Overwrite the old OTP in Redis with a fresh 5-minute expiry (300 seconds)
+    await set({ key: `password_reset:${email}`, value: hashedOtp, options: { exp: emailVarification } });
+
+
+    // 4. Trigger your existing mail event
+    eventEmitter.emit('sendMailEvent', {
+        to: email,
+        subject: "Resend Email Verification Code",
+        message: `
+            <h1>New Verification Code</h1>
+            <h2>${otp}</h2>
+            <h3>This OTP is valid for 5 minutes</h3>
+        `
+    });
+
+    return { message: "OTP resent successfully" };
+};

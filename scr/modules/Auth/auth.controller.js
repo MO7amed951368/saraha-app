@@ -57,16 +57,28 @@ authRouter.patch('/confirm-email', async (req, res) => {
     return res.status(200).json({ message: "email confirmed successfuly", data: result })
 
 })
-
+// foget password
 authRouter.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
     const result = await AuthService.forgotPassword(email);
     return res.status(200).json(result);
 });
-
+//rest password
 authRouter.patch('/reset-password', async (req, res) => {
     const { email, otp, newPassword } = req.body;
     const result = await AuthService.resetPassword(email, otp, newPassword);
+    return res.status(200).json(result);
+});
+
+// resend otp
+authRouter.post('/resend-email', async (req, res) => {
+    const { email } = req.body;
+    
+    if (!email) {
+        throw new BadRReqestError("Email is required", 400);
+    }
+
+    const result = await AuthService.resendEmailOtp(email);
     return res.status(200).json(result);
 });
 export default authRouter
