@@ -7,7 +7,7 @@ import { decodeToken, generatToken } from "../../common/utils/token.utils.js";
 import { set, calcTTL, get, del } from "../../common/services/redis.service.js";
 import { emailVarification, TokenTypeEnum } from "../../common/constant.enum.js";
 import { v4 as uuidv4 } from "uuid";
-import crypto from 'node:crypto'
+import crypto, { Hash } from 'node:crypto'
 import { eventEmitter } from "../../common/services/email.service.js";
 
 const userRepo = new UserRepository();
@@ -112,13 +112,13 @@ export const logOut = async (accessTokenData, refreshTokenData) => {
 export const confirmEmail = async (email, otp) => {
     // 1. get value of hased otp from redis
     const hasedOtp = await get(`email_varification:${email}`);
-    
+
     if (!hasedOtp) {
         throw new BadRReqestError("Invalid email or your OTP expired", 400, {}, "OTP_EXPIRATION");
     }
 
     const isValidOtp = await compareTwoHashes(hasedOtp, String(otp));
-    
+
     if (!isValidOtp) {
         throw new BadRReqestError("Invalid OTP", 400, {}, "OTP_INVALID");
     }
@@ -127,4 +127,58 @@ export const confirmEmail = async (email, otp) => {
     await del(`email_varification:${email}`);
 
     return { verified: true };
+};
+//forget password
+export const forgotPassword = async (email) => {
+    const user = await userRepo.findOneDocument({ email });
+    if (!user) {
+        // For security, you can return success even if user not found to prevent email enumeration
+        return { message: "If email exists, reset instructions sent" };
+    }
+
+    const resetOtp = crypto.randomInt(100000, 1000000).toString();
+    const hashedResetOtp = await hash(resetOtp);
+    console.log(hashedResetOtp);
+
+    // Store in Redis with 10 minutes expiry (600 seconds)
+    await set({ key: `password_reset:${email}`, value: hashedResetOtp, options: { exp: emailVarification } });
+
+    // Send via email event
+    eventEmitter.emit('sendMailEvent', {
+        to: email,
+        subject: "Password Reset Request",
+        message: `
+            <h1>Password Reset Code</h1>
+            <h2>${resetOtp}</h2>
+            <h3>This code is valid for 5 minutes. If you didn't request this, ignore it.</h3>
+        `
+    });
+
+    return { message: "Password reset OTP sent to email" };
+};
+
+//rest password
+export const resetPassword = async (email, otp, newPassword) => {
+    // 1. Get stored hash from Redis
+    const hashedOtp = await get(`password_reset:${email}`);
+    if (!hashedOtp) {
+        throw new BadRReqestError("OTP expired or invalid", 400, {}, "OTP_EXPIRATION");
+    }
+
+    // 2. Validate OTP
+    const isValid = await compareTwoHashes(hashedOtp, String(otp));
+    if (!isValid) {
+        throw new BadRReqestError("Invalid OTP", 400, {}, "OTP_INVALID");
+    }
+
+    // 3. Hash new password
+    const hashedPassword = await hash(newPassword);
+
+    // 4. Update database with new password
+    await userRepo.findAndUpdateDocument({ email }, { password: hashedPassword });
+
+    // 5. Clean up Redis token
+    await del(`password_reset:${email}`);
+
+    return { message: "Password reset successfully" };
 };
