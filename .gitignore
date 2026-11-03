@@ -1,8 +1,8 @@
 node_modules/
 Readme.md
-.dev.env
-.env.*
-!.env.example
+
+*.env
+
 uploads
 npm-debug.log*
 yarn-debug.log*
