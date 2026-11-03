@@ -30,12 +30,7 @@ messageRouter.get('/all-messages', authenticate, async (req, res) => {
     res.status(200).json({ message: 'messages fetched successfuly ', data: result })
 })
 
-//delete message by id
-messageRouter.delete('/delete-message/:id', authenticate, async (req, res) => {
-    const { id } = req.params
-    const result = await messageService.deleteMessageById(id, req.authUser._id)
-    res.status(200).json({ message: 'message deleted successfuly ', data: result })
-})
+
 
 
 

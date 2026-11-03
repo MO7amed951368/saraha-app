@@ -21,16 +21,6 @@ export const getAllMessagesByReceiverId = async (receiverId) => {
     return messageRepository.findDocuments({ receiverId })
 
 }
-//delete message by id
-export const deleteMessageById = async (id, receiverId) => {
-    const message = await messageRepository.findDocumentById(id)
-    if (!message) {
-        throw new notFoundError("message not found", 404, "MESSAGE_NOT_FOUND")
-    }
-    if (message.receiverId.toString() !== receiverId.toString()) {
-        throw new notFoundError("you are not authorized to delete this message", 403, "UNAUTHORIZED")
-    }
-    return messageRepository.deleteDocumentById(id)
-}
+
 
 
