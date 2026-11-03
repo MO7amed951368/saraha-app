@@ -1,8 +1,9 @@
 node_modules/
 Readme.md
-
+.dev.env
 *.env
-
+.env
+.preprod.env
 uploads
 npm-debug.log*
 yarn-debug.log*
