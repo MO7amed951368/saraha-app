@@ -43,9 +43,8 @@ app.use('/', (req, res) => {
 })
 //error handling middelware
 app.use(errorHandler)
-app.listen(port, () => {
-  console.log(`app is running on port ${port}`);
-
+app.listen(process.env.PORT, () => {
+  console.log(`app is running on port ${process.env.PORT}`);
 })
 
 
