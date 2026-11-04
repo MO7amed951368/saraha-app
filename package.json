@@ -4,7 +4,7 @@
   "description": "",
   "main": "./scr/index.js",
   "scripts": {
-    "preprod": "cross-env NODE_ENV=preprod nodemon .",
+    "preprod": "cross-env NODE_ENV=preprod node .",
     "dev": "cross-env NODE_ENV=dev nodemon ."
   },
   "keywords": [],
