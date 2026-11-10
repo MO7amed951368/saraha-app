@@ -13,7 +13,7 @@ messageRouter.post('/send-message', uploadMulter({ desiredPath: 'messages' }).si
         throw new BadRReqestError("validation error", 400, { validationError: validateRusult.error.details }, "VALIDATION_ERROR")
     }
     const { content, receiverId } = req.body
-    const file = req.file.path
+    const file = req.file
     if (!content && !file) {
         throw new BadRReqestError("content or file is required", 404, "CONTENT_OR_FILE_REQUIRED");
     }
@@ -30,8 +30,17 @@ messageRouter.get('/all-messages', authenticate, async (req, res) => {
     res.status(200).json({ message: 'messages fetched successfuly ', data: result })
 })
 
+// send anonymous message
+messageRouter.post('/send-anonymous-message', uploadMulter({ desiredPath: 'messages' }).single('file'), messageService.sendAnonymousMessage)
 
+// request identity of anonymous sender
+messageRouter.post('/request-identity', authenticate, messageService.requestIdentity)
 
+// get identity requests for a user
+messageRouter.get('/identity-requests', authenticate, messageService.getIdentityRequests)
+
+// handle identity request (accept/reject)
+messageRouter.post('/handle-identity-request', authenticate, messageService.handleIdentityRequest)
 
 
 export default messageRouter
