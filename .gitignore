@@ -4,6 +4,7 @@ Readme.md
 *.env
 .env
 .preprod.env
+mohamedTest
 uploads
 npm-debug.log*
 yarn-debug.log*
