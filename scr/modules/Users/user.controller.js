@@ -3,12 +3,13 @@ import * as userService from './user.service.js'
 import { paramsSchema } from "./user.validation.js";
 import { BadRReqestError } from "../../common/utils/errors/exeption.error.js";
 
-import { authorize } from "../../middelware/authorization.middelware.js";
+import { authorize } from "../../middlewares/authorization.middelware.js";
 import { roleEnum } from "../../common/constant.enum.js";
-import { authenticate } from "../../middelware/authentication.middelware.js";
-import { uploadMulter } from "../../middelware/multer.middelware.js";
-import { fileTypeFromFile } from 'file-type';
-import { validateMagicNumber } from "../../middelware/validateMagicNumber.js";
+import { authenticate } from "../../middlewares/authentication.middelware.js";
+import { upload } from "../../middlewares/multer.middelware.js";
+import { validateMagicNumber } from "../../middlewares/validateMagicNumber.js";
+import { uploadToCloudinary } from "../../middlewares/cloudinaryMiddleware.js";
+import { uploadMultipleToCloudinary } from "../../middlewares/cloudinaryCoverMiddleware.js";
 
 const userRouter = new Router()
 // get profile data
@@ -50,24 +51,46 @@ userRouter.delete('/delete', authenticate, authorize([roleEnum.ADMIN, roleEnum.U
 
 })
 // upload profile picture
-userRouter.patch('/upload', authenticate, uploadMulter({ desiredPath: 'profiles' }).single("profile"), validateMagicNumber, async (req, res, next) => {
-    const file = req.file
-    if (!file) {
-        throw new BadRReqestError("please uploade profile picture");
+userRouter.patch('/upload', authenticate, upload.single('image'), validateMagicNumber, uploadToCloudinary, async (req, res, next) => {
+    if (!req.file) {
+        throw new BadRReqestError("Please upload a profile picture");
     }
-    const { authUser } = req
-    const result = await userService.uploadProfilePicture(authUser, file)
-    res.status(200).json({ messsage: 'profile picture uploaded succsesfuly ', data: result })
+    
+    if (!req.cloudinaryResult) {
+        throw new BadRReqestError("Cloudinary upload failed");
+    }
 
-})
+    const { authUser } = req;
+    
+    // Pass ONLY the URL string, not the file object!
+    const result = await userService.uploadProfilePicture(authUser, req.cloudinaryResult.url);
+    
+    res.status(200).json({ message: 'Profile picture uploaded successfully', data: result });
+});
 // upload cover picture
-userRouter.patch('/upload-cover', authenticate, uploadMulter({ desiredPath: 'covers' }).array("covers", 3), validateMagicNumber, async (req, res, next) => {
-    const files = req.files
-    if (!files || files.length === 0) {
-        throw new BadRReqestError("Please upload cover pictures"); 
+userRouter.patch(
+    '/upload-cover', 
+    authenticate, 
+    upload.array('images', 5),          // 1. Multer parses up to 5 files into req.files
+    validateMagicNumber,                // 2. Validates magic numbers of buffers in req.files
+    uploadMultipleToCloudinary,         // 3. Uploads valid buffers to Cloudinary
+    async (req, res, next) => {
+        if (!req.cloudinaryResults || req.cloudinaryResults.length === 0) {
+            throw new BadRReqestError("Please upload cover pictures"); 
+        }
+
+        const { authUser } = req;
+        
+        // Extract ONLY the URL strings from Cloudinary's response
+        const coverUrls = req.cloudinaryResults.map(item => item.url);
+
+        // Pass the array of strings to the service
+        const result = await userService.uploadProfileCover(authUser, coverUrls);
+        
+        res.status(200).json({ 
+            message: 'Profile covers uploaded successfully', 
+            data: result 
+        });
     }
-    const { authUser } = req
-    const result = await userService.uploadProfileCover(authUser, files)
-    res.status(200).json({ message: 'Profile covers uploaded successfully', data: result })
-})
+);
 export default userRouter

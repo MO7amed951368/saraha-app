@@ -41,16 +41,18 @@ export const deleteUser = async (id) => {
     return await userRepo.findAndDeleteDocument(id)
 }
 //upload profile picture
-export const uploadProfilePicture = async (user, file) => {
-    return userRepo.updateDocumentById(user._id, { profileImage: file.path }, { returnDocument: 'after' })
-}
+export const uploadProfilePicture = async (user, imageUrl) => {
+    return userRepo.updateDocumentById(
+        user._id, 
+        { profileImage: imageUrl }, // Saves the URL string correctly
+        { returnDocument: 'after' }
+    );
+};
 //upload profile picture
-export const uploadProfileCover = async (user, files) => {
-    const filePaths = files.map(file => file.path)
-
+export const uploadProfileCover = async (user, coverUrls) => {
     return userRepo.updateDocumentById(
         user._id,
-        { profileCoversImage: filePaths },
+        { profileCoversImage: coverUrls }, // Saves array of URLs, not file objects
         { returnDocument: 'after' }
-    )
-}
+    );
+};

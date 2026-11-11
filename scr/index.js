@@ -6,12 +6,11 @@ import messageRouter from "./modules/Messages/message.controller.js";
 import dbConection from "./DB/db.conecction.js";
 import userRouter from "./modules/Users/user.controller.js";
 import envConfig from "./config/env.config.js";
-import errorHandler from "./middelware/errorMiddleware.js";
+import errorHandler from "./middlewares/errorMiddleware.js";
 import { redisConnection } from "./common/clients/redis.client.js";
 import helmet from "helmet";
 import cors from "cors"
-import { sendEmail } from "./common/services/email.service.js";
-import { rateLimiter } from "./middelware/rate-limiter.middelware.js";
+import { rateLimiter } from "./middlewares/rate-limiter.middelware.js";
 
 
 const app = new express()

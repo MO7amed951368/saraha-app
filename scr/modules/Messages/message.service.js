@@ -8,12 +8,12 @@ const messageRepository = new MessageRepository()
 const userRepo = new UserRepository()
 
 //send message
-export const sendMessage = async ({ content, file, receiverId }) => {
-    const user = await userRepo.findDocumentById(receiverId)
+export const sendMessage = async ({ content, file, receiver }) => {
+    const user = await userRepo.findDocumentById(receiver)
     if (!user) {
         throw new notFoundError("user not found", 404, "USER_NOT_FOUND")
     }
-    const message = await messageRepository.createNewDocument({ content, file, receiver: receiverId })
+    const message = await messageRepository.createNewDocument({ content, file, receiver })
     return message
 }
 // get all messages by receiver id

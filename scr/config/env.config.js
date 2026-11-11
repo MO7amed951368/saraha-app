@@ -1,4 +1,4 @@
-import dotenv, { parse } from 'dotenv'
+import dotenv from 'dotenv'
 
 dotenv.config({ path: process.env.NODE_ENV ? `.${process.env.NODE_ENV}.env` : '.env' })
 
@@ -36,7 +36,13 @@ const envConfig = {
     email: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+    },
+    cloudinary: {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
     }
+
 }
 
 export default envConfig

@@ -2,8 +2,8 @@ import { Router } from "express";
 import * as AuthService from './auth.service.js'
 import { loginSchema, registerSchema } from "./auth.valadation.js";
 import { BadRReqestError } from "../../common/utils/errors/exeption.error.js";
-import { authenticate } from "../../middelware/authentication.middelware.js";
-import { decodedRefreshToken } from "../../middelware/decoded.refreshToken.middelware .js";
+import { authenticate } from "../../middlewares/authentication.middelware.js";
+import { decodedRefreshToken } from "../../middlewares/decoded.refreshToken.middelware .js";
 const authRouter = Router()
 
 
